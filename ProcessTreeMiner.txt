@@ -1,0 +1,46 @@
+// This script iterates over a directory containing .xes files, 
+// applies the Inductive Miner (infrequent) and 
+// saves the resulting process tree in the given output directory.
+
+import java.io.File;
+
+xesDirectoryPath = "C:\\test\\xes\\";
+ptmlDirectoryPath = "C:\\test\\ptml\\";
+
+File dir = new File(xesDirectoryPath);
+  File[] directoryListing = dir.listFiles();
+  if (directoryListing != null) {
+    for (File xesFile : directoryListing) {
+    	if(xesFile.isFile()){
+		String fileName = xesFile.getName().split("\\.")[0];
+		print("Starting example script...");
+
+		print("1) Opening log file: " + xesFile);
+		org.deckfour.xes.model.XLog log = open_xes_log_file(xesFile);
+		print(" id of the opened log: " + log);
+		System.out.println("Creating settings");
+		org.processmining.plugins.InductiveMiner.mining.MiningParametersIMi parameters = new org.processmining.plugins.InductiveMiner.mining.MiningParametersIMi();
+		
+		System.out.println("Calling miner");
+		tree = mine_process_tree_with_inductive_miner_with_parameters(log, parameters);
+		
+		System.out.println("Saving process tree...");
+		File new_ptml_file = new File(ptmlDirectoryPath+fileName+".ptml");
+		
+		ptml = new org.processmining.processtree.ptml.Ptml().marshall(tree);
+		String text = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" + ptml.exportElement(ptml);
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new_ptml_file)));
+				bw.write(text);
+				bw.close();      
+
+    	}
+    }
+  } else {
+    // Handle the case where dir is not really a directory.
+    // Checking dir.isDirectory() above would not be sufficient
+    // to avoid race conditions with another process that deletes
+    // directories.
+    print(xesDirectoryPath + " is not a valid directory.");
+  }
+
+System.out.println("done.");

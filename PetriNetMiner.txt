@@ -1,0 +1,25 @@
+// This script applies the Inductive Miner on a given .xes file and saves the resulting petri net.
+
+print("Starting example script...");
+
+filename = "C:\\test\\4.xes";
+//---------------------------------------------------
+print("1) Opening log file: " + filename);
+
+// Use the name of the plugin (in lowercase) to open a log
+	
+org.deckfour.xes.model.XLog log = open_xes_log_file(filename);
+
+print(" id of the opened log: " + log);
+
+System.out.println("Creating settings");
+org.processmining.plugins.InductiveMiner.mining.MiningParametersIMi parameters = new org.processmining.plugins.InductiveMiner.mining.MiningParametersIMi();
+
+System.out.println("Calling miner");
+pn_and_marking = mine_petri_net_with_inductive_miner_with_parameters(log, parameters);
+
+System.out.println("Saving net");
+File net_file = new File("C:\\test\\mined_net.pnml");
+pnml_export_petri_net_(pn_and_marking[0], net_file);
+
+System.out.println("done.");
