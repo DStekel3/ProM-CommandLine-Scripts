@@ -1,0 +1,37 @@
+System.out.println("Starting MinePTQuality script...");
+
+// xesPath is your local directory containing xes files.
+// treePath is your local directory containing the corresponding ptml files.
+// this script computes the four quality dimensions for every process tree you have.
+// Eventually, it writes the result in a .txt file. Every line is the result of a separate process tree.
+
+xesPath = "C:\\test\\xes\\";
+treePath = "C:\\test\\ptml\\";
+//---------------------------------------------------
+String baseDir = new File(xesPath).getParentFile().toString();
+
+File dir = new File(xesPath);
+File[] directoryListing = dir.listFiles();
+String[] scores = new String[directoryListing.length];
+counter = 0;
+if (directoryListing != null) {
+  for (File xesFile : directoryListing) {
+  	  if(xesFile.isFile()){
+  	  	System.out.println("file: "+counter.toString());
+	  	System.out.println("1) Opening log file: " + xesFile);
+	  	org.deckfour.xes.model.XLog log = open_xes_log_file(xesFile);
+	  	treeFile = xesFile.toString().replace("xes", "ptml");
+	  	tree = import_process_tree_from_ptml_file(treeFile);
+	  	result = evaluate_process_tree_returns_string(log, tree);
+	  	System.out.println(result);
+	  	scores[counter] = xesFile.toString()+";"+result;
+	  }
+	  counter++;
+  }
+}
+
+PrintWriter writer = new PrintWriter(baseDir + "\\PTQ_output.txt", "UTF-8");
+for (String resultingLine : scores){
+  writer.println(resultingLine);
+}
+writer.close();
